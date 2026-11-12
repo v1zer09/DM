@@ -158,12 +158,12 @@ function casSim(id, n) {
 
 // ======================= ИНТЕРФЕЙС =======================
 function casOpen(id) {
-  if (busy.slot || (typeof autoTotal !== 'undefined' && autoTotal) || (typeof fsActive === 'function' && (fsActive() || pickActive()))) return;
+  if (busy.slot || (typeof crashLive !== 'undefined' && crashLive) || (typeof autoTotal !== 'undefined' && autoTotal) || (typeof fsActive === 'function' && (fsActive() || pickActive()))) return;
   casCur = id; casRender();
 }
 function casClose() { casCur = null; }
 function casBet(id) { const g = CAS.find(x => x.id === id); return Math.max(g.minBet, Math.min(CONFIG.slotsMaxBet, casBets[id] || g.minBet)); }
-function casSetBet(v) { if (!casCur || busy.slot || casLocked()) return; const g = CAS.find(x => x.id === casCur); v = Math.floor(+v || g.minBet); casBets[casCur] = Math.round(Math.max(g.minBet, Math.min(CONFIG.slotsMaxBet, v, Math.max(g.minBet, S.gems))) / g.minBet) * g.minBet; const i = document.getElementById('cas-bet'); if (i && CAB[casCur]) { i.value = casBets[casCur]; casInfo(); } else casRender(); }
+function casSetBet(v) { if (!casCur || busy.slot || casLocked()) return; const g = CAS.find(x => x.id === casCur); v = Math.floor(+v || g.minBet); casBets[casCur] = Math.floor(Math.max(g.minBet, Math.min(CONFIG.slotsMaxBet, v, Math.max(g.minBet, S.gems))) / g.minBet) * g.minBet; const i = document.getElementById('cas-bet'); if (i && CAB[casCur]) { i.value = casBets[casCur]; casInfo(); } else casRender(); }
 function casChBet(d) { casSetBet(casBet(casCur) + d); }
 const CAS_UI = { mines: () => minesUI() }, CAS_PLAY = {}, CAS_LOCK = [];   // 2.12: сюда регистрируются новые игры (casino2.js)
 function casLocked() { const st = casState(); return !!((st.dog && st.dog.fs) || (st.maze && st.maze.fs) || (st.oly && st.oly.fs) || (st.mines && st.mines.round) || CAS_LOCK.some(f => f(st))); }

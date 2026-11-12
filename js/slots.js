@@ -113,7 +113,7 @@ function renderSlotTab() {
   updateSlotBtn(); updateAutoUI();
   if (pk) setTimeout(openPick, 200);
 }
-function normBet(v) { const m = curMachine; v = Math.floor(+v || m.minBet); v = Math.max(m.minBet, Math.min(CONFIG.slotsMaxBet, v, Math.max(m.minBet, S.gems))); return Math.round(v / m.minBet) * m.minBet || m.minBet; }
+function normBet(v) { const m = curMachine; v = Math.floor(+v || m.minBet); v = Math.max(m.minBet, Math.min(CONFIG.slotsMaxBet, v, Math.max(m.minBet, S.gems))); return Math.floor(v / m.minBet) * m.minBet || m.minBet; }
 function setBet(v) { if (busy.slot || fsActive() || pickActive()) return; bets[curMachine.id] = normBet(v); const i = document.getElementById('bet'); if (i) i.value = bets[curMachine.id]; updateSlotBtn(); }
 function chBet(d) { setBet(bets[curMachine.id] + d); }
 function updateSlotBtn() {

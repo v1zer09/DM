@@ -474,7 +474,7 @@ function twFinish() {
   let msg = (win ? '🏆 Победа ' : draw ? '🤝 Ничья ' : '💀 Поражение ') + g.crowns[TB.me] + ':' + g.crowns[1 - TB.me];
   const d = todayStr(); if (T.day.d !== d) T.day = { d, n: 0 };
   if (mode === 'floor' && win) {
-    const first = floor >= T.floor;
+    const first = floor >= T.floor && !(floor === TW.floors && T.best >= TW.floors);   // последний этаж: T.floor выше не растёт, поэтому «первое прохождение» — только один раз
     T.day.n++;
     const g2 = T.day.n <= TW.rewardedPerDay ? twReward(floor, first) : 0;
     if (g2) addGems(g2);
@@ -486,7 +486,7 @@ function twFinish() {
     }
     twSaveGhost(g);
   }
-  if (mode === 'ghost') msg += twGhostResult(win);
+  if (mode === 'ghost') msg += twGhostResult(win, draw);
   if (mode === 'live' && typeof twLiveResult === 'function') msg += twLiveResult(win, draw);
   if (mode === 'cupbot') { msg += ' · против ' + (TB.botName || 'бота') + twCupsChange(win, draw); if (win) T.w++; else if (!draw) T.l++; twBoardPut(); }
   if (typeof twMetaAfter === 'function') msg += twMetaAfter(mode, win, draw, g, TB.me);
@@ -494,7 +494,7 @@ function twFinish() {
   save(); updateTop();
   const host = document.getElementById('games-host');
   const ov = document.createElement('div'); ov.className = 'tw-over';
-  ov.innerHTML = (typeof assetTag === 'function' ? assetTag('tower/banner-' + (win ? 'win' : draw ? 'draw' : 'lose'), 'tw-banner', '') : '') + '<div class="cinzel">' + esc(msg) + '</div><div class="rg-row2">' + (mode === 'floor' ? '<button class="btn green" data-click="twAgain()">' + (win ? 'Следующий этаж ➜' : 'Ещё раз') + '</button>' : mode === 'cupbot' || mode === 'ghost' ? '<button class="btn green" data-click="twStop();twGhostFight()">⚔ Ещё PvP</button>' : '') + '<button class="btn" data-click="twQuit()">В меню</button></div>';
+  ov.innerHTML = (typeof assetTag === 'function' ? assetTag('tower/banner-' + (win ? 'win' : draw ? 'draw' : 'lose'), 'tw-banner', '') : '') + '<div class="cinzel">' + esc(msg) + '</div><div class="rg-row2">' + (mode === 'floor' ? '<button class="btn green" data-click="twAgain()">' + (win ? 'Следующий этаж ➜' : 'Ещё раз') + '</button>' : mode === 'cupbot' || mode === 'ghost' ? '<button class="btn green" data-click="twPvpAgain()">⚔ Ещё PvP</button>' : '') + '<button class="btn" data-click="twQuit()">В меню</button></div>';
   const box = host && host.querySelector('.tw-cv-box'); if (box) box.appendChild(ov);
   sfx(win ? 'win' : 'lose');
   TB.done = true;
@@ -573,9 +573,10 @@ async function twGhostFight() {
     twFlash('Против призрака ' + gh.n + ' (🏆 ' + gh.mmr + ')');
   } catch (e) { showModal('☁', 'Нет связи', 'Не удалось загрузить соперника: ' + e.message, 'bad'); }
 }
-function twGhostResult(win) {
+function twPvpAgain() { twStop(); twGhostFight(); }   // data-click понимает только один вызов
+function twGhostResult(win, draw) {
   const T = TS(), gh = TB.ghost;
-  const cupMsg = twCupsChange(win, false); win ? T.w++ : T.l++;
+  const cupMsg = twCupsChange(win, !!draw); if (win) T.w++; else if (!draw) T.l++;   // ничья — не поражение
   if (win && gh.uid) twHit(gh.uid);                        // хозяин призрака теряет кубки
   const d = todayStr(); if (T.day.d !== d) T.day = { d, n: 0 };
   let gems = 0; if (win) { T.day.n++; if (T.day.n <= TW.rewardedPerDay) { gems = Math.round(rewardScale() * TW.reward.pvpWin); addGems(gems); } }

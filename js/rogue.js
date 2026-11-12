@@ -205,7 +205,7 @@ async function rgLoopBody(F) {
       const u = F.order[i]; F.turn = i;
       if (!u.alive) continue;
       rgRenderQueue();
-      if (rgTickStart(u)) { rgCheckEnd(); continue; }
+      if (rgTickStart(u) || !rgAlive().length) { rgCheckEnd(); continue; }   // горение в начале хода могло добить последнего врага
       if (u.st.stun > 0) { u.st.stun--; rgFloat(u, '💫', '#7ad3ff'); rgLogLine((u.hero ? u.n : u.n) + ' оглушён и пропускает ход'); await rgSleep(450); rgEndTurn(u); continue; }
       if (u.hero) await rgHeroTurn(); else await rgEnemyTurn(u);
       rgEndTurn(u);
@@ -603,7 +603,7 @@ function rogueEvent(i) {
   if (run.hp <= 0) { run.hp = 1; }
   if (eff && (eff.fight || eff.elite)) {
     run.pending = { type: eff.elite ? 'elite' : 'fight', group: (() => { const gs = eff.elite ? RG_ACT[run.act].elites : RG_ACT[run.act].fights; return gs[Math.floor(r() * gs.length)]; })(), hp0: run.hp };
-    run.state = 'fight'; save();
+    run.state = 'fight'; save(); renderRogue();   // под окном — экран боя, а не старое событие с неработающими кнопками
     return showModal('⚔', ev.t, (txt ? txt + ' ' : '') + out.join(' · '), '', { buttons: [{ t: 'В бой', c: 'green', f: () => { closeModal(); rogueFight(); } }] });
   }
   run.state = 'map'; run.pending = null; save(); renderRogue();

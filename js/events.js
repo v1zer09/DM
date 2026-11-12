@@ -148,6 +148,23 @@ function casOddsData(id) {
 }
 function casOddsHTML(id) {
   if (id === 'mines') return '<div class="odds-wrap" style="text-align:left;font-size:.85rem"><p>Поле 5×5. Каждая следующая клетка — мина с шансом «осталось мин / осталось закрытых клеток». Множитель честный, с отдачей ' + Math.round(CONFIG.casino.mines.edge * 100) + '%.</p><table class="board"><tr><th>Мин</th><th>1 клетка</th><th>3 клетки</th><th>5 клеток</th></tr>' + [1, 3, 5, 10, 20].map(m => '<tr><td>' + m + '</td>' + [1, 3, 5].map(k => '<td>' + (25 - m >= k ? '×' + minesMul(m, k) : '—') + '</td>').join('') + '</tr>').join('') + '</table></div>';
+  // у Шахты, Ракеты и Колеса нет барабанов с символами — у них своё окно (общий расчёт ниже на них падал)
+  const WRAP = '<div class="odds-wrap" style="text-align:left;font-size:.85rem">', TAIL = '<p class="muted" style="margin-top:6px">Только кристаллы. На длинной дистанции отдача меньше 100%.</p></div>';
+  if (id === 'mine') {
+    const r = ODDS_CACHE['cas:mine'] || (ODDS_CACHE['cas:mine'] = mineSim(40000));
+    return WRAP + '<p class="muted">Числа — прогон самой игры (' + fmt(40000) + ' круток).</p><table class="board"><tr><td>Выигрышная крутка</td><td><b>' + oddsPct(r.hit, 0) + '</b></td></tr><tr><td>Фриспины</td><td>' + oddsEvery(r.fsEvery) + '</td></tr><tr><td>Средняя отдача</td><td><b>' + oddsPct(r.rtp, 0) + '</b> ставки</td></tr></table>' + TAIL;
+  }
+  if (id === 'crash') {
+    const e = CONFIG.casino.crash.edge;
+    return WRAP + '<p>Шанс долететь до множителя ×M равен ' + Math.round(e * 100) + '% ÷ M, поэтому при любом множителе вывода выходит одно и то же.</p><table class="board"><tr><th>Множитель</th><th>Шанс долететь</th></tr>' +
+      [1.5, 2, 3, 5, 10, 50].map(m => '<tr><td>×' + m + '</td><td>' + oddsPct(e / m) + '</td></tr>').join('') + '</table><table class="board" style="margin-top:8px"><tr><td>Средняя отдача</td><td><b>' + oddsPct(e, 0) + '</b> ставки</td></tr></table>' + TAIL;
+  }
+  if (id === 'wheel') {
+    const n = WHEEL.main.length, c = {}; WHEEL.main.forEach(x => { c[x] = (c[x] || 0) + 1; });
+    const name = k => k === 'B' ? 'BONUS — бонус-колесо ×' + Math.min(...WHEEL.bonus) + '…×' + Math.max(...WHEEL.bonus) : k === '0' ? 'Пусто' : '×' + k;
+    return WRAP + '<p class="muted">Секторов: ' + n + ', каждый выпадает с равным шансом.</p><table class="board"><tr><th>Сектор</th><th>Шанс</th></tr>' +
+      Object.keys(c).sort((a, b) => (a === 'B') - (b === 'B') || a - b).map(k => '<tr><td>' + name(k) + '</td><td>' + oddsPct(c[k] / n) + '</td></tr>').join('') + '</table><table class="board" style="margin-top:8px"><tr><td>Средняя отдача</td><td><b>' + oddsPct(wheelEV(), 0) + '</b> ставки</td></tr></table>' + TAIL;
+  }
   const D = casOddsData(id), NM = { sc: '⭐ BONUS', wild: '🐺 Вайлд ×2/×3', orb: '⚡ Сфера ×2…×50' };
   const list = id === 'dog' ? DOG.syms.map(s => [s[0], s[1]]) : id === 'oly' ? OLY.syms.map(s => [s[0], s[1]]) : MAZE.syms.map(s => [s[0], () => heroIcon(s[1])]);
   const rows = list.map(([k, img]) => '<tr><td><img class="pay-ic" src="' + img() + '" referrerpolicy="no-referrer" alt=""> ' + (id === 'maze' ? RARITY_NAMES[k] : '') + '</td><td>' + oddsPct((D.cnt[k] || 0) / D.N) + '</td></tr>').join('') +

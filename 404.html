@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>404 — DM</title><meta name="robots" content="noindex"><link rel="icon" href="/dm/icon-192.png"><link rel="stylesheet" href="/dm/css/page.css">
+<title>404 — DM</title><meta name="robots" content="noindex"><script>/* сайт живёт в /DM/ на GitHub Pages и в корне на Vercel; страница 404 открывается с любой глубины, поэтому база задаётся здесь */
+document.write('<base href="' + (location.pathname.indexOf('/DM/') === 0 ? '/DM/' : '/') + '">');</script>
+<link rel="icon" href="icon-192.png"><link rel="stylesheet" href="css/page.css">
 <style>.c{text-align:center;padding-top:12vh}.big{font:900 5rem Georgia,serif;color:#e0452f;text-shadow:0 0 30px rgba(224,69,47,.5);margin:0}</style></head>
 <body><div class="box c">
 <p class="big">404</p>
 <h1>БИЧ! Такой страницы нет</h1>
 <p class="muted">Кажется, этот путь ведёт прямо в Рошпит. Вернись на безопасный лайн.</p>
-<p><a class="btn" href="/dm/">⚔ Вернуться в игру</a></p>
+<p><a class="btn" href="./">⚔ Вернуться в игру</a></p>
 </div></body></html>

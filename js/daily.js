@@ -35,6 +35,7 @@ function startAuto(n) {
   if (busy.slot) return;
   autoLeft = n; autoTotal = n; autoWins = 0; autoGems0 = S.gems;
   updateAutoUI(); spinSlots();
+  if (!busy.slot) stopAuto();   // крутка не началась (мало кристаллов, открыто окно) — иначе автоспин «залипал» включённым
 }
 function stopAuto(reason) {
   if (!autoTotal) return;

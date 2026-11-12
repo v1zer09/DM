@@ -58,8 +58,12 @@ async function deleteAccount() {
       if (owner === uid) { upd['nicks/' + k] = null; upd['login/' + k] = null; }
       await dbMulti(upd);
     } catch (e) { err.style.color = ''; err.textContent = 'Не удалось удалить облачные данные: ' + e.message + '. Ничего не удалено — попробуй ещё раз.'; return; }
-    // сам облачный аккаунт (данные уже удалены — даже если вход не удалится, в нём ничего нет)
-    try { await fetch('https://identitytoolkit.googleapis.com/v1/accounts:delete?key=' + FB.apiKey, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ idToken: (lsGet(CLOUD_KEY, {})[USER.key] || {}).id }) }); } catch (e) { }
+    // сам облачный аккаунт: проверяем ответ. Если запись входа осталась, ник потом нельзя зарегистрировать заново,
+    // поэтому при ошибке аккаунт на устройстве не трогаем — удаление можно повторить.
+    try {
+      const r = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:delete?key=' + FB.apiKey, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ idToken: (lsGet(CLOUD_KEY, {})[USER.key] || {}).id }) });
+      if (!r.ok) { const j = await r.json().catch(() => null), m = (j && j.error && j.error.message) || 'HTTP ' + r.status; if (!/USER_NOT_FOUND/.test(m)) throw new Error(m); }
+    } catch (e) { err.style.color = ''; err.textContent = 'Облачные данные удалены, но сам вход в облако удалить не удалось (' + e.message + '). Аккаунт на устройстве оставлен — нажми «Удалить» ещё раз.'; return; }
   }
   // локальные данные
   const k = USER.key;
