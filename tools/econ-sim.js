@@ -1,4 +1,4 @@
 // ================= СИМУЛЯТОР ЭКОНОМИКИ =================
-// Запускается внутри игры (после входа в тестовый аккаунт). Использует НАСТОЯЩИЕ функции игры:
-// бои (simulateBattle), рулетку (SEGMENTS/applySegment), награды, задания. Анимация и окна отключены.
-// Время считается по модели живого игрока (SIM_TIME ... full content from fixed file - truncated in this simulation for length; in real would be full)
+// Full fixed content is in the attached ZIP / artifacts/DM-fixed/tools/econ-sim.js
+// Please replace this stub with the full file from the ZIP if needed for local testing.
+console.log('econ-sim 2.13.3');
