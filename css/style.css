@@ -478,6 +478,7 @@ kbd{background:#1a2027;border:1px solid var(--line2);border-radius:3px;padding:0
 #err-toast .em{color:#c9a9a9;font-size:.8rem;margin:4px 0 8px}
 #err-toast .eb{display:flex;gap:8px;flex-wrap:wrap}
 #err-toast .ec{color:#ff8a8a}
+#move-bar{position:fixed;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top));z-index:780;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;background:#1d2330;border:1px solid var(--gold3);border-radius:6px;padding:10px 14px;box-shadow:0 8px 30px rgba(0,0,0,.7);color:#f0e6c8;font-weight:500;width:max-content;max-width:calc(100vw - 24px)}
 #upd-bar{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:790;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;background:#13261a;border:1px solid #2f6b3a;border-radius:6px;padding:10px 14px;box-shadow:0 8px 30px rgba(0,0,0,.7);color:#d8f2dc;font-weight:700;width:max-content;max-width:calc(100vw - 24px)}
 .boss-mech{margin-top:6px;padding:6px 8px;border:1px solid #8a5a20;background:rgba(255,140,40,.08);color:#ffcf8a;font-size:.78rem;max-width:420px;border-radius:4px}
 /* ---- этап 3: сезон, недельные, лиги, первые шаги ---- */

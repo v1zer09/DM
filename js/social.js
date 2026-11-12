@@ -98,7 +98,7 @@ function renderFriends() {
 // Ссылка ?ref=<ник>. Награда обоим, когда приглашённый пройдёт 10-й уровень арены (защита от твинков:
 // правила базы проверяют арену ≥ 10 в рейтинге, у каждого аккаунта может быть только один пригласивший).
 (function captureRef() { try { const r = new URLSearchParams(location.search).get('ref'); if (r && validNick(r)) localStorage.setItem('d2m_ref', r.trim()); } catch (e) { } })();
-function inviteLink() { return location.origin + location.pathname.replace(/[^/]*$/, '') + '?ref=' + encodeURIComponent(USER.nick); }
+function inviteLink() { return siteUrl() + '?ref=' + encodeURIComponent(USER.nick); }
 function referralHTML() {
   const S2 = S.ref || {};
   return '<div class="sec-title">Пригласи друга</div><div class="panel panel-b"><div style="font-size:.88rem">Друг заходит по твоей ссылке → проходит <b>10-й уровень арены</b> → вы оба получаете награду: тебе ' + gemHTML(CONFIG.social.refGems) + ', другу ' + gemHTML(Math.round(rewardScale() * CONFIG.social.refFriendMul)) + '.</div>' +
@@ -106,8 +106,8 @@ function referralHTML() {
     '<div class="muted" style="font-size:.75rem;margin-top:6px">Приглашено с наградой: ' + (S2.claimed || 0) + '/' + CONFIG.social.refMax + '</div></div>';
 }
 function shareInvite() {
-  const url = inviteLink(), text = 'Залетай в Dota 2 Master — фан-игру по Доте прямо в браузере!';
-  if (navigator.share) navigator.share({ title: 'Dota 2 Master', text, url }).catch(() => {});
+  const url = inviteLink(), text = 'Залетай в DM — фан-игру по Доте прямо в браузере!';
+  if (navigator.share) navigator.share({ title: 'DM', text, url }).catch(() => {});
   else { try { navigator.clipboard.writeText(url).then(() => toast('🔗 Ссылка скопирована', url)); } catch (e) { document.getElementById('ref-link').select(); } }
 }
 // у приглашённого: при регистрации запоминаем, кто пригласил; на арене 10 — сообщаем в базу

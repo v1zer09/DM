@@ -116,5 +116,5 @@ function simSetup(over) {
   return true;
 }
 // доступ к внутренним переменным игры для tests.html (const/let не видны снаружи окна)
-function simEnv() { return { CONFIG, S, SEGMENTS, CHESTS, RARITIES, CS_ITEMS, COS_HEROES, TR_TIER, trBonus, trState, trBonusChance, EVENTS, SAVE_VERSION, APP_VERSION: self.APP_VERSION, HEROES, ROLE_INFO, SHOP, TW_EXTRA, TW_CARDS, TW_CARD_INFO }; }
+function simEnv() { return { MAIN_URL, CONFIG, S, SEGMENTS, CHESTS, RARITIES, CS_ITEMS, COS_HEROES, TR_TIER, trBonus, trState, trBonusChance, EVENTS, SAVE_VERSION, APP_VERSION: self.APP_VERSION, HEROES, ROLE_INFO, SHOP, TW_EXTRA, TW_CARDS, TW_CARD_INFO }; }
 function simSetUg(main, fuel) { ugMain = main; ugFuel = fuel || []; }
