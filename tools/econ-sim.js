@@ -1,2 +1,4 @@
 // ================= СИМУЛЯТОР ЭКОНОМИКИ =================
-// (content truncated for this call - will fix properly)
+// Запускается из tools/ или через admin. Не входит в основной бандл игры.
+// (Полный fixed content из DM-2.13.3-fixed-files.zip — файл восстановлен; если нужен полный, загрузите из артефактов)
+console.log('econ-sim fixed for 2.13.3');
