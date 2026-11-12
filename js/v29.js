@@ -118,8 +118,10 @@ const LEAGUE_TOP = [
 async function leagueTopReward(sid) {
   const c = typeof cloud === 'function' && cloud(); if (!c || !sid) return;
   S.leagueTop = S.leagueTop || {}; if (S.leagueTop[sid]) return;
-  const top = await db('GET', 'seasons/' + sid, undefined, false, { orderBy: '$value', limitToLast: 3 }).catch(() => null);
-  S.leagueTop[sid] = 1; save();
+  let top;
+  // нет связи — сезон не помечаем обработанным и повторяем при следующем входе (иначе награда терялась навсегда)
+  try { top = await db('GET', 'seasons/' + sid, undefined, false, { orderBy: '$value', limitToLast: 3 }); } catch (e) { S.leagueTopTodo = sid; save(); return; }
+  S.leagueTop[sid] = 1; delete S.leagueTopTodo; save();
   if (!isObj(top)) return;
   const place = Object.entries(top).sort((a, b) => b[1] - a[1]).findIndex(([u]) => u === c.uid);
   if (place < 0 || place > 2) return;

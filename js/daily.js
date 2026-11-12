@@ -6,7 +6,7 @@ function heroOfDay() {
   return HEROES[Math.floor(r() * HEROES.length)].id;
 }
 function heroSpinCost(id) { const c = spinCost(S.heroes[id].level); return id === heroOfDay() ? Math.round(c * CONFIG.heroOfDay.spinMul) : c; }
-// 2.4: «Испытание дня» — выиграй бои с героем дня в стаке, получи его скин и кристаллы
+// 2.4: «Испытание дня» — выиграй бои с героем дня в стаке, получи кристаллы
 function hodState() { const d = todayStr(); if (!S.hod || S.hod.d !== d) S.hod = { d, n: 0, done: false }; return S.hod; }
 function hodWin(ids) {
   const id = heroOfDay(), st = hodState();
@@ -26,7 +26,7 @@ function hodTake() {
 }
 function hodBanner(compact) {
   const id = heroOfDay(), h = HERO_BY_ID[id], st = hodState(), need = CONFIG.heroOfDay.wins;
-  return '<div class="hod' + (compact ? ' compact' : '') + '"><img src="' + heroImg(id) + '" referrerpolicy="no-referrer" alt="' + esc(h.name) + '" title="Открыть героя" role="button" tabindex="0" data-click="goHero(\'' + id + '\')"><div style="flex:1"><div class="hod-t">☀ Испытание дня: <b>' + esc(h.name) + '</b></div><div class="hod-d">' + (st.done ? '✓ Выполнено — приходи завтра за новым героем' : 'Выиграй ' + need + ' боя с ним в стаке (арена, файты, PvP) · ' + st.n + '/' + need + ' · награда: его скин + ' + fmt(Math.round(rewardScale() * CONFIG.heroOfDay.rewardMul)) + ' 🔶') + '</div></div>' + (st.done ? '' : '<button class="btn sm gold" data-click="hodTake()">В стак</button>') + '</div>';
+  return '<div class="hod' + (compact ? ' compact' : '') + '"><img src="' + heroImg(id) + '" referrerpolicy="no-referrer" alt="' + esc(h.name) + '" title="Открыть героя" role="button" tabindex="0" data-click="goHero(\'' + id + '\')"><div style="flex:1"><div class="hod-t">☀ Испытание дня: <b>' + esc(h.name) + '</b></div><div class="hod-d">' + (st.done ? '✓ Выполнено — приходи завтра за новым героем' : 'Выиграй ' + need + ' боя с ним в стаке (арена, файты, PvP) · ' + st.n + '/' + need + ' · награда: ' + fmt(Math.round(rewardScale() * CONFIG.heroOfDay.rewardMul)) + ' 🔶') + '</div></div>' + (st.done ? '' : '<button class="btn sm gold" data-click="hodTake()">В стак</button>') + '</div>';
 }
 
 // ---------- Автоспин в слотах ----------

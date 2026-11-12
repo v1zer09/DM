@@ -278,7 +278,7 @@ function ssStart() {
       if (c.t >= SS.D.delay && !c.done) {
         c.done = true; let got = 0;
         SS.foes.forEach(f => { if (f.dead <= 0 && Math.hypot(f.x - c.x, f.y - c.y) < SS.D.r) { f.dead = 1200; got++; } });
-        if (got) { SS.hit += got; document.getElementById('ss-hit').textContent = SS.hit; SS.fx.push({ x: c.x, y: c.y - 40, t: got > 1 ? 'ДВОЙНОЙ!' : 'ПОПАЛ!', life: 50 }); sfx('coin'); } else sfx('lose');
+        if (got) { SS.hit++; SS.kill = (SS.kill || 0) + got; document.getElementById('ss-hit').textContent = SS.hit; SS.fx.push({ x: c.x, y: c.y - 40, t: got > 1 ? 'ДВОЙНОЙ!' : 'ПОПАЛ!', life: 50 }); sfx('coin'); } else sfx('lose');
       }
       return c.t < SS.D.delay + 400;
     });
@@ -306,8 +306,9 @@ function ssDraw(now) {
   SS.fx = SS.fx.filter(f => { f.life--; ctx.fillStyle = '#ffd36a'; ctx.font = 'bold 24px Cinzel, serif'; ctx.textAlign = 'center'; ctx.globalAlpha = Math.min(1, f.life / 20); ctx.fillText(f.t, f.x, f.y - (50 - f.life) * 0.5); ctx.globalAlpha = 1; return f.life > 0; });
 }
 function ssEnd() {
-  const hits = SS.hit, D = SS.D; cancelAnimationFrame(SS.raf); SS = null;
-  const g = gamePay('sunstrike', Math.min(10, hits) * rewardScale() * CONFIG.minigames.pay.sunstrike * D.pay);
+  // попадание = каст, задевший врага (их 10, отсюда «N/10» и достижение); двойные убийства идут только в награду
+  const hits = SS.hit, kills = SS.kill || 0, D = SS.D; cancelAnimationFrame(SS.raf); SS = null;
+  const g = gamePay('sunstrike', Math.min(10, kills) * rewardScale() * CONFIG.minigames.pay.sunstrike * D.pay);
   const rec = setBest(mgBestKey('sunstrike'), hits, true);
   document.getElementById('game-stage').innerHTML = mgDiffBar('sunstrike') + gameResult('Sun Strike · ' + D.n, hits + '/10 попаданий', g, rec, 'sunstrike');
   if (hits >= 7) { hype('НИШТЯК'); }

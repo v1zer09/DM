@@ -217,8 +217,9 @@ function publicRows(c) {
 }
 // публичная функция «сохранить в облако» (с учётом конфликтов и лимита)
 async function cloudPush() {
-  if (!USER || !cloud() || cloudBusy) return;
-  try { await cloudSync(); } catch (e) { console.warn('sync', e); }
+  if (!USER || !cloud()) return 'none';
+  if (cloudBusy) return 'busy';
+  try { return await cloudSync(); } catch (e) { console.warn('sync', e); return 'error'; }
 }
 setInterval(() => { if (USER && cloud() && !conflictOpen && isDirty()) cloudPush(); }, 90000);
 

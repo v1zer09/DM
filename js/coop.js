@@ -5,7 +5,7 @@
 // 2) Бой считается одинаково на обоих устройствах: общий сид + одинаковые герои. По сети идут только действия:
 //    на каждый ход каждый пишет in/{uid}/{ход} — строку «какие ульты, агро, фокус». Ход выполняется, когда есть оба.
 // 3) Напарник молчит — бой на паузе до 30 секунд, потом его героями управляет бот (ульты в удачный момент).
-// 4) Награда за каждого босса — раз в день: уникальный предмет и кристаллы.
+// 4) Награда за каждого босса — раз в день: кристаллы (предметы — только из сундуков героев).
 // Нагрузка: ~40 ходов × (1 запись + 2–3 чтения) ≈ 150 маленьких запросов на бой, ~60 КБ. Лимит 10 ГБ/мес — это ~150 000 боёв.
 // Ограничения: 1 награда за босса в день, лобби живёт 90 с, бой не дольше 60 ходов, комнату удаляет хост после боя.
 const COOP_BOSSES = [
@@ -46,7 +46,7 @@ function renderCoop() {
   const box = document.getElementById('coop-box'); if (!box) return;
   const st = coopState(), on = typeof cloud === 'function' && cloud();
   box.innerHTML = '<div class="muted" style="font-size:.78rem;margin-bottom:6px">Боссы на двоих: у них здоровье и механики рассчитаны на двух живых игроков. Бой идёт одновременно у обоих. Награда — раз в день за каждого босса.</div><div class="coop-list">' +
-    COOP_BOSSES.map((b, i) => '<div class="coop-b' + (coopBoss === i ? ' sel' : '') + '" data-click="coopPick(' + i + ')"><span class="coop-ic">' + b.ic + '</span><div><b>' + esc(b.n) + '</b>' + (st.got[b.id] ? ' <span class="muted">✓ сегодня</span>' : '') + '<div class="muted">' + esc(b.d) + '</div><div style="font-size:.72rem">Награда: <b style="color:' + RARITY_COLOR.arcana + '">' + esc(b.item) + '</b> + кристаллы</div></div></div>').join('') + '</div>' +
+    COOP_BOSSES.map((b, i) => '<div class="coop-b' + (coopBoss === i ? ' sel' : '') + '" data-click="coopPick(' + i + ')"><span class="coop-ic">' + b.ic + '</span><div><b>' + esc(b.n) + '</b>' + (st.got[b.id] ? ' <span class="muted">✓ сегодня</span>' : '') + '<div class="muted">' + esc(b.d) + '</div><div style="font-size:.72rem">Награда: ' + gemHTML(Math.round(rewardScale() * 3)) + '</div></div></div>').join('') + '</div>' +
     (on ? '<div class="coop-act"><button class="btn red" data-click="coopRandom()">🎲 Случайный напарник</button><input type="text" id="coop-nick" maxlength="20" placeholder="ник друга"><button class="btn gold" data-click="coopInvite()">📨 Позвать</button></div><div id="coop-inv"></div>'
       : '<div class="muted">Кооп доступен после входа в облачный аккаунт (вкладка «Онлайн»).</div>');
   if (on) coopCheckInvites();

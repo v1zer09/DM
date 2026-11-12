@@ -52,7 +52,15 @@ function runAct(expr, el, ev) {
 // ---------- маленькие функции вместо бывшего inline-кода ----------
 function setUseCons(k, on) { S.useCons[k] = !!on; save(); }
 function setBoardSort(k) { boardSort = k; renderOnline(); }
-function manualCloudSave() { return cloudPush().then(() => toast('☁', 'Сохранено в облако')); }
+function manualCloudSave() {
+  // 'pulled', 'conflict' и 'newer' сообщают о себе сами (сверка показывает своё окно или уведомление)
+  return cloudPush().then(r => {
+    if (r === 'pushed' || r === 'same') toast('☁', 'Сохранено в облако');
+    else if (r === 'busy') toast('☁ Облако', 'Сейчас сохранить не получилось — попробуй через минуту');
+    else if (r === 'error') toast('☁ Облако', 'Не удалось сохранить: нет связи с облаком');
+    else if (r === 'none') toast('☁ Облако', 'Онлайн не подключён');
+  });
+}
 function goHero(id) { switchTab('heroes'); selectHero(id); }
 function pickTitle(id, el) { setTitle(id); el.parentNode.querySelectorAll('.tp').forEach(x => x.classList.remove('on')); el.classList.add('on'); }
 function setCraftR(v) { craftR = v; renderCraft(); }

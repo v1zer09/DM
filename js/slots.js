@@ -195,6 +195,10 @@ function spinSlots() {
   const lw = document.getElementById('last-win'); lw.textContent = ''; lw.className = 'last-win';
   const ls = document.getElementById('slot-lines'); if (ls) ls.innerHTML = '';
   const grid = rollGrid(m, !!fs);
+  // ставка уже списана, а выигрыш начисляется после остановки барабанов: запоминаем крутку в сейве,
+  // чтобы при перезагрузке посреди анимации её досчитать (slotResume), а не потерять
+  const pid = Date.now() + Math.random();
+  S.slotPend = { id: pid, m: m.id, bet, free: !!fs, g: grid.map(col => col.map(s => s.sp ? { sp: s.sp, rarity: 'sp', mul: s.mul || 0 } : { rarity: s.rarity })) }; save();
   const durBase = speed === 'fast' ? 500 : 1500, durStep = speed === 'fast' ? 140 : 380;
   let done = 0;
   for (let r = 0; r < m.reels; r++) {
@@ -214,7 +218,7 @@ function spinSlots() {
       sfx('tick');
       while (inner.children.length > 3) inner.removeChild(inner.firstChild);
       inner.style.transition = 'none'; inner.style.transform = 'translateY(0)';
-      if (++done === m.reels) evalSlots(m, bet, grid);
+      if (++done === m.reels) evalSlots(m, bet, grid, pid);
     }, dur + 60);
   }
 }
@@ -244,27 +248,48 @@ function slotSpinResult(m, grid, free, fsMulRoll) {
   x *= fsMul;
   return { wins, x, orbs, fsMul, sc: flat.filter(s => s.sp === 'sc').length, pk: flat.filter(s => s.sp === 'pk').length };
 }
-function evalSlots(m, bet, grid) {
+// начисление по крутке без интерфейса: общее для обычного конца крутки и для досчёта прерванной
+function slotSettle(m, bet, grid, free) {
+  const R = slotSpinResult(m, grid, free), win = Math.floor(bet * R.x), B = CONFIG.slotBonus;
+  let retrig = false, newFs = false, newPk = false;
+  if (win > 0) addGems(win);
+  if (free && S.slotFs) S.slotFs.win = (S.slotFs.win || 0) + win;
+  if (R.sc >= 3) {
+    if (free && S.slotFs) { S.slotFs.left += B.fsRetrig; S.slotFs.total += B.fsRetrig; retrig = true; }
+    else if (!fsActive()) { S.slotFs = { m: m.id, bet, left: B.fsSpins, total: B.fsSpins, win: 0 }; newFs = true; }
+  }
+  if (!free && R.pk >= 3 && !pickActive()) { pickStart(m, bet); newPk = true; }
+  return { R, win, retrig, newFs, newPk };
+}
+// крутка, прерванная перезагрузкой страницы: досчитываем по сохранённой сетке (вызывается из startGame)
+function slotResume() {
+  const p = S && S.slotPend; if (!p || busy.slot) return;
+  delete S.slotPend;
+  const m = MACHINES.find(x => x.id === p.m), bet = Math.floor(+p.bet) || 0;
+  const cellOk = s => s && (s.sp ? ['sc', 'pk'].includes(s.sp) || (s.sp === 'mx' && s.mul >= 2 && s.mul <= 10) : SLOT_W[s.rarity] != null);
+  if (!m || bet < m.minBet || bet > CONFIG.slotsMaxBet || !Array.isArray(p.g) || p.g.length !== m.reels || !p.g.every(c => Array.isArray(c) && c.length === 3 && c.every(cellOk))) { save(); return; }
+  const Z = slotSettle(m, bet, p.g, !!p.free);
+  save(); updateTop();
+  toast('🎰 Слоты', 'Прерванная крутка досчитана: ' + (Z.win > 0 ? '+' + fmt(Z.win) + ' 🔶' : 'без выигрыша') + (Z.newFs || Z.retrig ? ' · фриспины' : '') + (Z.newPk ? ' · бонус-игра' : ''));
+}
+function evalSlots(m, bet, grid, pid) {
   const free = busy.slotFree; busy.slotFree = false;
-  const R = slotSpinResult(m, grid, free), wins = R.wins;
+  // сейв сменился, пока крутились барабаны (загрузка из облака, выход) — в другой сейв эту крутку не начисляем
+  if (!S || !S.slotPend || S.slotPend.id !== pid) { busy.slot = false; if (S) { updateSlotBtn(); slotResume(); } return; }
+  delete S.slotPend;
+  const Z = slotSettle(m, bet, grid, free), R = Z.R, wins = R.wins;
   const lw = document.getElementById('last-win');
   const full = wins.some(w => w.full);
   if (full) hype('НИШТЯК'); else if (wins.length) hype('21'); else if (!R.sc && !R.pk) hype('БИЧ');
   drawSlotLines(m, wins);
-  const win = Math.floor(bet * R.x);
+  const win = Z.win;
   if (win > 0) {
-    addGems(win);
     lw.innerHTML = (full ? '🎉 ' : '✨ ') + wins.length + ' лин.' + (R.orbs && R.x ? ' · ⚡×' + R.orbs : '') + (R.fsMul > 1 ? ' · ⭐×' + R.fsMul : '') + ' — +' + gemHTML(win);
     lw.className = 'last-win' + (win < bet && !free ? ' lose' : '');
   } else { lw.textContent = free ? '⭐ Фриспин без выигрыша' : '😢 Ни одной линии'; lw.className = 'last-win lose'; }
-  if (free && S.slotFs) S.slotFs.win = (S.slotFs.win || 0) + win;
   const B = CONFIG.slotBonus;
-  let newFs = false, newPk = false;
-  if (R.sc >= 3) {
-    if (free && S.slotFs) { S.slotFs.left += B.fsRetrig; S.slotFs.total += B.fsRetrig; lw.innerHTML += ' · ⭐ +' + B.fsRetrig + ' фриспинов!'; }
-    else if (!fsActive()) { S.slotFs = { m: m.id, bet, left: B.fsSpins, total: B.fsSpins, win: 0 }; newFs = true; }
-  }
-  if (!free && R.pk >= 3 && !pickActive()) { pickStart(m, bet); newPk = true; }
+  const newFs = Z.newFs, newPk = Z.newPk;
+  if (Z.retrig) lw.innerHTML += ' · ⭐ +' + B.fsRetrig + ' фриспинов!';
   busy.slot = false; updateTop(); updateSlotBtn(); save();
   if (newFs || newPk) {
     if (autoTotal) stopAuto(newFs ? 'выпали фриспины!' : 'бонус-игра!');

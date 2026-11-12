@@ -76,7 +76,7 @@ async function deleteAccount() {
 
 // ---------- аналитика без персональных данных ----------
 // Только обезличенные счётчики по дням: stats/<дата>/<событие> += 1. Никаких ников, uid, устройств.
-const STAT_EVENTS = ['start', 'register', 'tutorial_done', 'onb_done', 'arena_10', 'arena_25', 'arena_50', 'arena_75', 'arena_100', 'pvp', 'season_claim', 'weekly_done', 'share', 'bug_report'];
+const STAT_EVENTS = ['start', 'register', 'tutorial_done', 'onb_done', 'arena_10', 'arena_25', 'arena_50', 'arena_75', 'arena_100', 'arena_150', 'arena_200', 'arena_250', 'pvp', 'season_claim', 'weekly_done', 'share', 'bug_report'];
 function statEvent(ev, oncePerDay) {
   try {
     if (window.SIM_MODE || !fbOn() || !STAT_EVENTS.includes(ev) || (typeof LIVE !== 'undefined' && LIVE.cfg.analytics === false)) return;
