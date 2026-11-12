@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: |
+          for f in js/*.js tools/*.js tools/*.mjs sw.js; do node --check "$f"; done
+          node -e "JSON.parse(require('fs').readFileSync('database.rules.json','utf8')); JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+      - name: Game tests (tools/tests.html in headless Chrome)
+        run: node tools/run-tests.mjs

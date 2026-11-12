@@ -229,7 +229,7 @@ function twMetaAfter(mode, win, draw, g, me) {
   const secs = g.tick / TW.FPS;
   const pvp = mode === 'ghost' || mode === 'live' || mode === 'cupbot';
   // античит: победа быстрее 20 с невозможна честно (у трона 2600 здоровья) — не засчитывается
-  if (win && secs < 20) return ' · ⚠ бой слишком быстрый — результат не засчитан';
+  if (win && secs < 20) return ' · ⚠ бой слишком быстрый — руны, задания и сундук не начислены';
   twQuestAdd('play', 1); if (pvp) twQuestAdd('pvp', 1);
   if (win) twQuestAdd('win', 1);
   twQuestAdd('crowns', g.crowns[me]);

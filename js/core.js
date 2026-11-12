@@ -803,6 +803,8 @@ function startGame() {
   setTimeout(() => { if (typeof applyGrants === 'function') applyGrants(); }, 4000);
   setTimeout(() => { if (typeof showNextPick === 'function') showNextPick(); }, 6500);   // 2.9: невыбранные награды
   setTimeout(() => { if (typeof showNextHeroPick === 'function') showNextHeroPick(); }, 8000);   // 2.13: награды «на выбранного героя»
+  if (typeof slotResume === 'function') slotResume();   // крутка слотов, прерванная перезагрузкой
+  setTimeout(() => { if (S && S.leagueTopTodo && typeof leagueTopReward === 'function') leagueTopReward(S.leagueTopTodo).catch(() => {}); }, 9000);   // награда топ-3 сезона, если в прошлый раз не было связи
   if (typeof arenaCycleCheck === 'function') arenaCycleCheck();   // 2.13: сброс уровней арены (раз в 36 ч и один раз после обновления)
   if (typeof cloud === 'function' && fbOn() && cloud() && !bootSynced) { bootSynced = true; setTimeout(async () => { try { await syncServerTime(); } catch (e) { } try { await ensureNickClaim(); } catch (e) { } try { await cloudSync(); } catch (e) { } checkGifts(); checkPvpHits(); }, 1200); }
   if (S._wipeBackup) { try { if (USER) localStorage.setItem('d2m_prewipe_' + USER.key, S._wipeBackup); } catch (e) { } delete S._wipeBackup; }

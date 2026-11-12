@@ -96,7 +96,7 @@ function renderFightInfo(id) {
   const ch = winChanceEstimate(Object.assign({}, def, { L: L * 7 + 3 }));
   const chCol = ch > 0.75 ? 'var(--ok)' : ch > 0.4 ? 'var(--gold2)' : 'var(--danger)';
   const first = L === c + 1, ms = L % 10 === 0;
-  const msName = f.boss === 'tormentor' ? 'Aghanim\'s Shard' : f.rosh ? 'Aegis + Cheese' : f.xp ? '+2 уровня герою стака' : 'снаряжение главному герою';
+  const msName = f.boss === 'tormentor' ? 'Aghanim\'s Shard' : f.rosh ? 'Aegis + Cheese' : f.xp ? '+2 уровня герою стака' : 'кристаллы';
   const box = document.getElementById('level-info');
   box.innerHTML = '<div style="min-width:200px;flex:1"><div class="cinzel" style="font-size:1.2rem;color:#fff;font-weight:700">' + f.ic + ' ' + f.n + ' · уровень ' + L + '</div><div class="muted" style="font-size:.8rem">' + esc(f.d) + '</div>' +
     '<div style="font-size:.85rem;margin-top:4px">Сила врагов: <b style="color:var(--dire)">' + fmt(def.R) + '</b> · твои ' + f.team + ' героя: <b style="color:var(--radiant)">' + fmt(getStack().slice(0, f.team).reduce((a, x) => a + heroPower(x), 0)) + '</b> · волн: ' + def.waves.length + '</div>' +

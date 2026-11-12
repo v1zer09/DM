@@ -171,7 +171,7 @@ function leagueHTML() {
 function weeklyHTML() {
   const w = ensureWeekly();
   const days = 7 - ((new Date(todayStr() + 'T00:00:00Z').getUTCDay() + 6) % 7);
-  return '<div class="sec-title">Задания недели <span class="muted" style="font-size:.75rem;letter-spacing:0;font-family:Roboto Condensed;text-transform:none">обновятся через ' + days + ' дн. · все 3 = Immortal</span></div><div class="quest-list">' +
+  return '<div class="sec-title">Задания недели <span class="muted" style="font-size:.75rem;letter-spacing:0;font-family:Roboto Condensed;text-transform:none">обновятся через ' + days + ' дн. · за все 3 — бонус кристаллами</span></div><div class="quest-list">' +
     w.quests.map((q, i) => { const t = WEEKLY_POOL.find(x => x.id === q.id), done = q.prog >= q.n;
       return '<div class="quest panel weekly' + (q.claimed ? ' claimed' : done ? ' done' : '') + '"><div class="qi">' + t.icon + '</div><div style="flex:1"><div class="qt">' + t.t.replace('{n}', q.n) + '</div><div class="xpbar"><div style="width:' + Math.min(100, q.prog / q.n * 100) + '%"></div></div><div class="muted" style="font-size:.75rem">' + q.prog + '/' + q.n + ' · +' + CONFIG.progression.xp.weekly + ' XP</div></div><div style="text-align:right">' + gemHTML(weeklyReward()) + '<br>' +
         (q.claimed ? '<span class="muted">✓ получено</span>' : '<button class="btn sm ' + (done ? 'green' : '') + '" ' + (done ? '' : 'disabled') + ' data-click="claimWeekly(' + i + ')">Забрать</button>') + '</div></div>'; }).join('') + '</div>';

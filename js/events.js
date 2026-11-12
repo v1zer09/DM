@@ -9,8 +9,6 @@ const EVENTS = [
     chest: { name: 'Морозный сундук', price: 25, w: { rare: 40, mythical: 34, immortal: 21, arcana: 5 } },
     shop: [
       { id: 'gems', kind: 'gems', name: 'Мешок кристаллов', mul: 6, price: 30 },
-      { id: 'imm', kind: 'item', rarity: 'immortal', name: 'Immortal для главного героя', price: 120 },
-      { id: 'arc', kind: 'item', rarity: 'arcana', name: 'Arcana для главного героя', price: 450, limit: 1 },
       { id: 'title', kind: 'title', name: 'Титул «Дед Мороз Древних»', title: { id: 'ev-newyear', name: 'Дед Мороз Древних', color: '#9ad8ff', icon: '🎅' }, price: 300, limit: 1 },
       { id: 'cheese', kind: 'cons', cons: 'cheese', name: 'Cheese (для Рошана и арены)', price: 60, limit: 3 }
     ]
@@ -22,7 +20,6 @@ const EVENTS = [
     chest: { name: 'Тыквенный сундук', price: 25, w: { rare: 40, mythical: 34, immortal: 21, arcana: 5 } },
     shop: [
       { id: 'gems', kind: 'gems', name: 'Мешок кристаллов', mul: 6, price: 30 },
-      { id: 'imm', kind: 'item', rarity: 'immortal', name: 'Immortal для главного героя', price: 120 },
       { id: 'title', kind: 'title', name: 'Титул «Повелитель Диретайда»', title: { id: 'ev-halloween', name: 'Повелитель Диретайда', color: '#ff8a3a', icon: '🎃' }, price: 300, limit: 1 }
     ]
   }
@@ -83,7 +80,7 @@ function renderEventBox() {
   const st = evState();
   host.innerHTML = '<div class="panel panel-b event-box theme-' + ev.theme + '"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center"><div><div class="cinzel" style="font-size:1.2rem;color:#fff">' + esc(ev.name) + '</div><div class="muted" style="font-size:.8rem">ещё ' + eventEndsIn(ev) + ' дн. · ' + esc(ev.cur.name) + ' сгорят после окончания</div></div><div class="ev-cur">' + ev.cur.icon + ' <b>' + st.cur + '</b></div></div>' +
     '<div class="muted" style="font-size:.78rem;margin:6px 0">' + esc(ev.cur.name) + ' дают: победа на арене +' + ev.earn.arenaWins + ', задание дня +' + ev.earn.questsDone + ', вход +' + ev.earn.login + ', задание недели +' + ev.earn.weekly + ', раунд мини-игры +' + ev.earn.gameRounds + ', PvP +' + ev.earn.pvp + ', Рошан +' + ev.earn.roshanHits + '</div>' +
-    '<div class="ev-shop"><div class="ev-item"><b>' + esc(ev.chest.name) + '</b><div class="odds">Шансы: ' + oddsLine(ev.chest.w) + '</div><button class="btn green sm" data-click="evChest()" ' + (st.cur >= ev.chest.price ? '' : 'disabled') + '>Открыть · ' + ev.chest.price + ' ' + ev.cur.icon + '</button></div>' +
+    '<div class="ev-shop"><div class="ev-item"><b>' + esc(ev.chest.name) + '</b><div>' + gemHTML(Math.round(rewardScale() * 2)) + '</div><button class="btn green sm" data-click="evChest()" ' + (st.cur >= ev.chest.price ? '' : 'disabled') + '>Открыть · ' + ev.chest.price + ' ' + ev.cur.icon + '</button></div>' +
     ev.shop.map(it => { const left = it.limit ? it.limit - (st.bought[it.id] || 0) : null;
       return '<div class="ev-item"><b>' + esc(it.name) + '</b>' + (it.kind === 'gems' ? '<div>' + gemHTML(Math.round(rewardScale() * it.mul)) + '</div>' : '') + (left != null ? '<div class="muted" style="font-size:.72rem">осталось: ' + left + '</div>' : '') +
         '<button class="btn sm gold" data-click="evBuy(\'' + it.id + '\')" ' + (st.cur >= it.price && left !== 0 ? '' : 'disabled') + '>' + it.price + ' ' + ev.cur.icon + '</button></div>'; }).join('') + '</div></div>';
