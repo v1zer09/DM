@@ -1,13 +1,13 @@
 // ================= АДМИНКА =================
 // Работает только если uid администратора записан в базе: admins/<uid> = true (вручную в консоли Firebase).
-const FB = Object.assign({ apiKey: 'AIzaSyB6ZBeX-OYMukmfN_QpqF0PH40rHRBW1SY', dbUrl: 'https://dm-default-rtdb.europe-west1.firebasedatabase.app' }, JSON.parse(localStorage.getItem('d2m_fb') || '{}'));
+const FB = Object.assign({ apiKey: 'AIzaSyB6ZBeX-OYMukmfN_QpqF0PH40rHRBW1SY', dbUrl: 'https://dota2-master-default-rtdb.europe-west1.firebasedatabase.app' }, JSON.parse(localStorage.getItem('d2m_fb') || '{}'));
 const SV = { '.sv': 'timestamp' };
 let A = null;   // { uid, id }
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const nickKey = n => n.trim().toLowerCase();
 const dbKey = k => encodeURIComponent(k.replace(/\./g, ','));
-function nickEmail(n) { let h = ''; for (const ch of unescape(encodeURIComponent(nickKey(n)))) h += ch.charCodeAt(0).toString(16).padStart(2, '0'); return 'p' + h + '@dm.game'; }
+function nickEmail(n) { let h = ''; for (const ch of unescape(encodeURIComponent(nickKey(n)))) h += ch.charCodeAt(0).toString(16).padStart(2, '0'); return 'p' + h + '@dota2master.game'; }
 const say = (el, t, bad) => { $(el).className = 'log' + (bad ? ' err' : ''); $(el).textContent = t; };
 async function db(method, path, body, params) {
   const qs = A ? ['auth=' + A.id] : [];

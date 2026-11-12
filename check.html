@@ -33,7 +33,7 @@ h2{font-size:1rem;color:#e8c77a;margin:22px 0 6px}
 <div id="out2" style="margin-top:10px"></div>
 </div>
 <script>
-const FB = Object.assign({ apiKey: 'AIzaSyB6ZBeX-OYMukmfN_QpqF0PH40rHRBW1SY', dbUrl: 'https://dm-default-rtdb.europe-west1.firebasedatabase.app' }, JSON.parse(localStorage.getItem('d2m_fb') || '{}'));
+const FB = Object.assign({ apiKey: 'AIzaSyB6ZBeX-OYMukmfN_QpqF0PH40rHRBW1SY', dbUrl: 'https://dota2-master-default-rtdb.europe-west1.firebasedatabase.app' }, JSON.parse(localStorage.getItem('d2m_fb') || '{}'));
 const base = FB.dbUrl.replace(/\/$/, '');
 function row(host, st, title, det) {
   const d = document.createElement('div'); d.className = 'row ' + st;
@@ -79,7 +79,7 @@ function summary(res) {
   s.textContent = bad ? '❌ Проблем: ' + bad + '. Смотри красные строки.' : '✅ Сайт и правила базы в порядке.';
 }
 function nickKey(n) { return n.trim().toLowerCase(); }
-function nickEmail(n) { let h = ''; for (const ch of unescape(encodeURIComponent(nickKey(n)))) h += ch.charCodeAt(0).toString(16).padStart(2, '0'); return 'p' + h + '@dm.game'; }
+function nickEmail(n) { let h = ''; for (const ch of unescape(encodeURIComponent(nickKey(n)))) h += ch.charCodeAt(0).toString(16).padStart(2, '0'); return 'p' + h + '@dota2master.game'; }
 const dbKey = k => encodeURIComponent(k.replace(/\./g, ','));
 document.getElementById('go').onclick = async () => {
   const out = document.getElementById('out2'); out.innerHTML = '';
