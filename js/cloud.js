@@ -1,6 +1,6 @@
 // ================= ОНЛАЙН (Firebase Auth + Realtime Database через REST) =================
 // Схема базы и правила доступа — в файле database.rules.json (вставляется в консоль Firebase).
-const FB_DEFAULT = { apiKey: 'AIzaSyB6ZBeX-OYMukmfN_QpqF0PH40rHRBW1SY', dbUrl: 'https://dm-default-rtdb.europe-west1.firebasedatabase.app' };
+const FB_DEFAULT = { apiKey: 'AIzaSyB6ZBeX-OYMukmfN_QpqF0PH40rHRBW1SY', dbUrl: 'https://dota2-master-default-rtdb.europe-west1.firebasedatabase.app' };
 let FB = Object.assign({}, FB_DEFAULT, lsGet('d2m_fb', {}));
 function fbOn() { return !!(FB.apiKey && FB.dbUrl); }
 const CLOUD_KEY = 'd2m_cloud';           // { [nickKey]: { uid, refresh, id, exp, email } }
@@ -13,7 +13,7 @@ function nickEmail(nick) {
   // ник → безопасный e-mail для Firebase Auth (кириллица кодируется)
   const k = nickKey(nick); let hex = '';
   for (const ch of unescape(encodeURIComponent(k))) hex += ch.charCodeAt(0).toString(16).padStart(2, '0');
-  return 'p' + hex + '@dm.game';
+  return 'p' + hex + '@dota2master.game';
 }
 function fbErr(j) { return new Error((j && j.error && j.error.message) || 'auth'); }
 function tok(j, email) { return { uid: j.localId, id: j.idToken, refresh: j.refreshToken, exp: Date.now() + (+j.expiresIn - 60) * 1000, email: email || j.email }; }
