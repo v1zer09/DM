@@ -223,7 +223,7 @@ function shareCardCanvas() {
   rows.forEach(([k, v], i) => { const y = 520 + i * 95; x.fillStyle = 'rgba(255,255,255,.06)'; x.fillRect(120, y - 62, W - 240, 80); x.textAlign = 'left'; x.fillStyle = '#9fb0c0'; x.fillText(k, 160, y); x.textAlign = 'right'; x.fillStyle = '#ffffff'; x.fillText(v, W - 160, y); });
   if (S.bestDrop) { x.textAlign = 'center'; x.fillStyle = RARITY_COLOR[S.bestDrop.rarity] || '#fff'; x.font = '700 40px "Roboto Condensed", Arial'; x.fillText('Лучший дроп: ' + S.bestDrop.name.slice(0, 34), W / 2, 1050); x.font = '600 34px "Roboto Condensed", Arial'; x.fillText(RARITY_NAMES[S.bestDrop.rarity] || '', W / 2, 1100); }
   x.textAlign = 'center'; x.fillStyle = '#e8c77a'; x.font = '600 38px "Roboto Condensed", Arial'; x.fillText('Играй бесплатно в браузере:', W / 2, 1210);
-  x.fillStyle = '#ffffff'; x.font = '500 34px "Roboto Condensed", Arial'; x.fillText(location.host + location.pathname.replace(/[^/]*$/, ''), W / 2, 1258);
+  x.fillStyle = '#ffffff'; x.font = '500 34px "Roboto Condensed", Arial'; x.fillText(siteUrl().replace(/^https?:\/\//, ''), W / 2, 1258);
   x.fillStyle = '#6f7d8a'; x.font = '400 22px Arial'; x.fillText('неофициальная фан-игра · Dota 2 © Valve', W / 2, 1300);
   return c;
 }
@@ -233,7 +233,7 @@ async function shareCard() {
   const file = new File([blob], 'dm-' + USER.nick + '.png', { type: 'image/png' });
   if (typeof statEvent === 'function') statEvent('share');
   try {
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'DM', text: 'Мой прогресс в DM — залетай! ' + location.href.split('?')[0] }); return; }
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'DM', text: 'Мой прогресс в DM — залетай! ' + siteUrl() }); return; }
   } catch (e) { if (e && e.name === 'AbortError') return; }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
   toast('📤 Картинка сохранена', 'Отправь её в VK или Telegram');
