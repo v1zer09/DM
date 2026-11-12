@@ -296,6 +296,12 @@ function genHeroEq(heroId, rarity, slot) {
   const art = { weapon: sk[0], head: sk[1], armor: sk[2], arms: sk[1], back: sk[3], mount: sk[0] }[slot] || sk[0] || null;
   return { name: pick(SKIN_PREFIX[rarity]) + ' ' + EQ_NOUN[slot] + ' of ' + HERO_BY_ID[heroId].name, hero: heroId, path: undefined, art, rarity, slot };
 }
+// пул каталога по редкости считаем один раз: окно шансов слотов зовёт pickCatalog миллионы раз, и полный перебор каталога вешал страницу
+const CAT_POOL = {};
+function catalogPool(rarity) {
+  const c = CAT_POOL[rarity]; if (c && c.n === CS_ITEMS.length) return c.pool;
+  const pool = CS_ITEMS.filter(x => x.rarity === rarity); CAT_POOL[rarity] = { n: CS_ITEMS.length, pool }; return pool;
+}
 function pickCatalog(rarity, slot, heroId, strict) {
   if (strict && heroId && HERO_BY_ID[heroId]) {
     let own = CS_ITEMS.filter(x => x.hero === heroId && x.rarity === rarity);
@@ -303,7 +309,7 @@ function pickCatalog(rarity, slot, heroId, strict) {
     if (os.length) own = os;
     return own.length && Math.random() < 0.75 ? pick(own) : genHeroEq(heroId, rarity, slot);
   }
-  let pool = CS_ITEMS.filter(x => x.rarity === rarity);
+  let pool = catalogPool(rarity);
   if (!pool.length) pool = CS_ITEMS;
   const byHero = heroId ? pool.filter(x => x.hero === heroId) : [];
   if (byHero.length && Math.random() < 0.7) pool = byHero;
@@ -525,7 +531,7 @@ function profileCardHTML() {
     '<div class="pf-stats">' + st('⚔', 'Арена', (S.arena.cleared || 0) + '/' + ARENA_MAX) + st('💪', 'Сила стака', fmtShort(stackPower())) + st('🏆', 'PvP', (pv.w || 0) + '–' + (pv.l || 0)) +
     st('⭐', 'Героев 50 ур.', maxed + '/' + HEROES.length) + st('🎒', 'Предметов', fmt(S.items.length)) + st('🟢', 'Arcana', arc) +
     st('🏅', 'Достижения', ach + '/' + achT) + st('🏰', 'Башня', 'этаж ' + ((S.tower && S.tower.best) || 0)) + st('🌀', 'Путь Древнего', ((S.rogue && S.rogue.wins) || 0) + ' побед') + '</div>' +
-    '<div class="pf-top"><div class="muted">Лучшие герои</div>' + top.map(h => '<div class="pf-hero"><img src="' + STEAM + 'heroes/' + h.id + '.png" referrerpolicy="no-referrer" alt=""><span>' + esc(h.name) + '<small>ур. ' + S.heroes[h.id].level + ' · ⚔ ' + fmtShort(heroPower(h.id)) + '</small></span></div>').join('') + '</div>';
+    '<div class="pf-top"><div class="muted">Лучшие герои</div>' + top.map(h => '<div class="pf-hero"><img src="' + STEAM + 'heroes/' + h.id + '.png" referrerpolicy="no-referrer" alt="" loading="lazy" decoding="async"><span>' + esc(h.name) + '<small>ур. ' + S.heroes[h.id].level + ' · ⚔ ' + fmtShort(heroPower(h.id)) + '</small></span></div>').join('') + '</div>';
 }
 // 2.13: профиль переработан — вкладки «Обзор / Профиль / Безопасность / Аккаунт».
 // Поля pf-nick, pf-pass, pf-old, pf-err, #pf-heroes остаются в DOM (на них завязаны saveProfile и обёртка в social.js).
@@ -611,6 +617,8 @@ async function saveProfile() {
     if (await hashPass(oldPass, acc.salt) !== acc.hash) { pfShow('sec'); err.textContent = 'Введи текущий пароль (вкладка «Пароль»)'; return; }
   }
   if (pass && pass.length < 4) { pfShow('sec'); err.textContent = 'Пароль минимум 4 символа'; return; }
+  // проверяем до смены ника в облаке: иначе ник менялся, а пароль — нет, и вход в облако ломался
+  if (hasCloud && pass && pass.length < 6) { pfShow('sec'); err.textContent = 'Для облачного аккаунта пароль минимум 6 символов'; return; }
   err.style.color = 'var(--muted)'; err.textContent = hasCloud && (pass || nk !== USER.key) ? 'Сохраняю в облаке…' : '';
   try {
     if (hasCloud && nk !== USER.key) await cloudRenameNick(USER.key, nk);
@@ -633,7 +641,11 @@ async function saveProfile() {
 }
 function resetProgress() {
   confirmBox('Сбросить прогресс?', 'Кристаллы, уровни героев, предметы и арена обнулятся. Аккаунт останется.', () => {
-    const av = S.avatar; S = freshState(); S.avatar = av; save(); startGame();
+    // migrate — чтобы сейв был полным сразу (иначе при следующем входе сработал бы сезонный срез кристаллов);
+    // метка облака остаётся: без неё пустой сейв считался «новым устройством» и облако возвращало старый прогресс
+    const av = S.avatar, cl = S.cloud; S = freshState(); S.avatar = av; migrate(S); if (S.season24) S.season24.shown = true;
+    if (cl && cl.at) S.cloud = { at: cl.at, h: '' };
+    save(); startGame(); if (typeof schedulePush === 'function') schedulePush(0);
     showModal('🗑', 'Сброс', 'Прогресс очищен. Удачи с нуля!', '', { auto: true });
   });
 }

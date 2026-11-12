@@ -19,6 +19,7 @@ function hcPreview(id, r) {
 }
 function renderChests() {
   const host = document.getElementById('chests-host'); if (!host) return;
+  renderEventBox();   // эта функция заменяет обёртку из events.js, поэтому магазин события рисуем здесь
   if (!hcHero || !HERO_BY_ID[hcHero]) hcHero = mainHeroId();
   const h = HERO_BY_ID[hcHero], cost = CONFIG.heroChest.cost;
   const own = S.items.filter(x => x.heroId === hcHero).length;
@@ -42,7 +43,7 @@ function openHeroChest() {
   const N = 46, WIN = 40, cards = [];
   for (let i = 0; i < N; i++) cards.push(i === WIN ? { name: it.name, rarity: it.rarity, src: itemImgChain(it)[0] } : hcPreview(id, weightedRarity()));
   stage.innerHTML = '<div class="case-wrap panel"><div class="case-line"></div><div class="case-strip" id="case-strip">' +
-    cards.map(x => '<div class="case-card" style="--rc:' + RARITY_COLOR[x.rarity] + '"><img src="' + x.src + '" referrerpolicy="no-referrer"><span>' + esc(x.name) + '</span></div>').join('') + '</div></div>';
+    cards.map(x => '<div class="case-card" style="--rc:' + RARITY_COLOR[x.rarity] + '"><img src="' + x.src + '" referrerpolicy="no-referrer" loading="lazy" decoding="async"><span>' + esc(x.name) + '</span></div>').join('') + '</div></div>';
   stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
   const strip = document.getElementById('case-strip'), cw = 132, wrapW = strip.parentNode.clientWidth;
   const target = WIN * cw - wrapW / 2 + cw / 2 + rnd(-40, 40);

@@ -114,7 +114,7 @@ function renderStackPicker() {
   const list = HEROES.slice().sort((a, b) => (fav.includes(b.id) - fav.includes(a.id)) || heroPower(b.id) - heroPower(a.id));
   const html = '<div class="muted" style="font-size:.8rem;margin-bottom:6px">Выбери 5 героев. Первый — главный (👑). Нажми на выбранного, чтобы убрать. ⭐ — избранные.</div>' +
     '<div class="sp-sel">' + [0, 1, 2, 3, 4].map(i => { const id = stackDraft[i]; return '<div class="sp-slot">' + (id ? '<img src="' + STEAM + 'heroes/' + id + '.png" referrerpolicy="no-referrer" alt=""><small>' + (i === 0 ? '👑 ' : '') + esc(HERO_BY_ID[id].name) + '</small>' : '<small>пусто</small>') + '</div>'; }).join('') + '</div>' +
-    '<div class="sp-grid">' + list.map(h => '<button class="sp-h' + (stackDraft.includes(h.id) ? ' on' : '') + '" data-click="stackToggle(\'' + h.id + '\')"><img src="' + STEAM + 'heroes/' + h.id + '.png" referrerpolicy="no-referrer" alt=""><small>' + (fav.includes(h.id) ? '⭐' : '') + esc(h.name) + '<br>⚔' + fmtShort(heroPower(h.id)) + '</small></button>').join('') + '</div>';
+    '<div class="sp-grid">' + list.map(h => '<button class="sp-h' + (stackDraft.includes(h.id) ? ' on' : '') + '" data-click="stackToggle(\'' + h.id + '\')"><img src="' + STEAM + 'heroes/' + h.id + '.png" referrerpolicy="no-referrer" alt="" loading="lazy" decoding="async"><small>' + (fav.includes(h.id) ? '⭐' : '') + esc(h.name) + '<br>⚔' + fmtShort(heroPower(h.id)) + '</small></button>').join('') + '</div>';
   showModal('🧩', 'Свой стак', html, '', { html: true, buttons: [{ t: 'Сохранить', c: 'green', f: () => { if (stackDraft.length !== 5) return; S.customStack = stackDraft.slice(); S.mainHero = stackDraft[0]; save(); closeModal(); renderArena(); updateTop(); } }, { t: 'Авто (сильнейшие)', f: () => { S.customStack = null; save(); closeModal(); renderArena(); updateTop(); } }] });
 }
 function stackToggle(id) {
@@ -170,7 +170,7 @@ function renderArena() {
 }
 function fmtShort(n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(n >= 1e4 ? 0 : 1) + 'k' : String(n); }
 function winChanceEstimate(def) {
-  const bt = buildTeam({ noCons: true });
+  const bt = buildTeam({ noCons: true, size: def.teamSize });   // как в startBattle: в боях 3×3 считаем троих, а не весь стак
   const d = Object.assign({}, def, { team: bt.tm });
   let w = 0; const N = 160, r = seeded(def.L * 31 + Math.round(stackPower()));
   for (let i = 0; i < N; i++) if (simulateBattle(bt.team, d, r).win) w++;

@@ -249,8 +249,9 @@ function registerSW() {
     setInterval(() => reg.update().catch(() => {}), 30 * 60000);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
   }).catch(() => {});
-  let reloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloading) return; reloading = true; try { save(); } catch (e) { } location.reload(); });
+  // первый заход: воркер только что установился и взял страницу под контроль — это не обновление, перезагружать нечего
+  let reloading = false, hadCtl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!hadCtl) { hadCtl = true; return; } if (reloading) return; reloading = true; try { save(); } catch (e) { } location.reload(); });
 }
 function showUpdateBar(apply) {
   if (document.getElementById('upd-bar')) return;

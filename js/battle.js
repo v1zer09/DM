@@ -51,6 +51,7 @@ function createBattle(team, def, rand, opts) {
   const passive = (list, kind) => list.filter(s => s.kind === 'passive' && s.extra === kind).reduce((a, s) => a + s.pow, 0);
   const T = team.map(t => {
     const m = Object.assign({ atk: 1, hp: 1, crit: 0, critMul: 1.9, ultEvery: def.fastUlt ? 3 : ULT_EVERY, ultMul: 1, taken: 1, lifesteal: 0 }, t.mods || {});
+    if (def.fastUlt) m.ultEvery = Math.min(m.ultEvery, 3);   // талант «ульта каждые 5» не должен замедлять бой, где у всех ульта каждые 3
     const sk = skillsOf(t.id);
     const max = t.p * 10 * m.hp * TM.hp;
     return {

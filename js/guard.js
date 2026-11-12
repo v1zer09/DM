@@ -72,6 +72,8 @@ function validateSave(raw) {
   ['stats', 'ach', 'daily', 'shop', 'cons', 'useCons', 'gameDay', 'gameBest', 'roshan', 'cloud'].forEach(k => {
     if (st[k] != null && !isObj(st[k])) { delete st[k]; fixes.push(k); }
   });
+  // облако не хранит пустые массивы: после него owned/slots могут пропасть — восстанавливаем, а не выбрасываем покупки
+  if (st.shop) ['owned', 'slots'].forEach(k => { if (st.shop[k] == null) st.shop[k] = []; });
   if (st.shop && (!Array.isArray(st.shop.owned) || !Array.isArray(st.shop.slots))) { delete st.shop; fixes.push('shop'); }
   if (st.invBest != null && !(st.invBest > 0 && st.invBest < 1e6)) { st.invBest = null; fixes.push('invBest'); }
   if (st.mainHero != null && !HERO_BY_ID[st.mainHero]) { st.mainHero = null; fixes.push('mainHero'); }

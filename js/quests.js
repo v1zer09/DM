@@ -220,7 +220,8 @@ function applyImport(txt) {
     const chk = validateSave(st0);
     if (!chk.ok || !st0.heroes || !Array.isArray(st0.items)) throw new Error('bad');
     if (JSON.stringify(st0) === JSON.stringify(S)) { err.textContent = 'Это и есть текущее сохранение.'; return; }
-    S = chk.st; delete S.cloud; migrate(S); save(); closeModal(); startGame();
+    // метка облака — от текущего аккаунта (не из файла): без неё облако при сверке возвращало прежний сейв
+    const cl = S.cloud; S = chk.st; delete S.cloud; if (cl && cl.at) S.cloud = { at: cl.at, h: '' }; migrate(S); save(); closeModal(); startGame();
     showModal('💾', 'Импорт выполнен', 'Прогресс загружен' + (data.nick ? ' (сохранение игрока ' + data.nick + ')' : '') + '.', 'ok');
   } catch (e) { err.style.color = ''; err.textContent = 'Не похоже на сохранение DM.'; }
 }

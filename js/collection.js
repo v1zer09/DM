@@ -135,6 +135,7 @@ function renderLoadout() {
   });
 }
 function sellItem(uid) {
+  if (busy.ug) return;   // пока крутится апгрейд, доноров продавать нельзя: шанс уже посчитан с ними
   const it = S.items.find(x => x.uid === uid); if (!it) return;
   addGems(sellPrice(it)); removeItem(uid); track('itemsSold');
   if (ugMain === uid) ugMain = null; ugFuel = ugFuel.filter(x => x !== uid);
@@ -162,6 +163,7 @@ function equipBestAll() {
 }
 function toggleAutoEquip(el) { S.autoEquipOff = !el.checked; save(); }
 function sellVisible() {
+  if (busy.ug) return;
   const list = visibleItems();
   if (!list.length) return;
   const sum = list.reduce((a, x) => a + sellPrice(x), 0);
@@ -170,6 +172,7 @@ function sellVisible() {
   }, true);
 }
 function sellCommons() {
+  if (busy.ug) return;
   const list = S.items.filter(x => x.rarity === 'common');
   if (!list.length) return;
   const sum = list.reduce((a, x) => a + sellPrice(x), 0);

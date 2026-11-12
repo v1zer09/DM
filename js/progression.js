@@ -89,6 +89,8 @@ function claimSeason() {
   s.claimed = lvl; addGems(gems); save(); renderQuests();
   if (got.some(x => /Arcana|титул/.test(x))) hype('НИШТЯК');
   showModal('🎫', 'Награды сезона', '+' + fmt(gems) + ' 🔶' + (got.length ? ' · ' + got.join(', ') : ''), 'ok');
+  // окно выбора героя не открывается поверх этого окна — показываем его после закрытия, а не при следующем входе
+  if (S.heroPicks && S.heroPicks.length) whenModalClosed(showNextHeroPick);
 }
 // смена сезона: невыданные награды выдаются автоматически, MMR мягко сбрасывается, лига даёт награду
 function seasonRollover(newId) {
@@ -118,10 +120,10 @@ function seasonRollover(newId) {
 // ---------- первые шаги (онбординг) ----------
 const ONBOARDING = [
   { id: 'spin', t: 'Крутни рулетку любого героя', ok: () => st('heroSpins') >= 1, gems: 1000, tab: 'heroes' },
-  { id: 'arena1', t: 'Пройди 1-й уровень арены', ok: () => S.arena.cleared >= 1, gems: 1500, tab: 'arena' },
+  { id: 'arena1', t: 'Пройди 1-й уровень арены', ok: () => arenaBest() >= 1, gems: 1500, tab: 'arena' },
   { id: 'claim', t: 'Забери награду за вход в «Заданиях»', ok: () => S.daily && S.daily.login.claimed === S.daily.day, gems: 500, tab: 'quests' },
   { id: 'slot', t: 'Прокрути слоты', ok: () => st('slotSpins') >= 1, gems: 800, tab: 'slots' },
-  { id: 'arena5', t: 'Пройди 5-й уровень арены', ok: () => S.arena.cleared >= 5, gems: 2000, tab: 'arena' }
+  { id: 'arena5', t: 'Пройди 5-й уровень арены', ok: () => arenaBest() >= 5, gems: 2000, tab: 'arena' }
 ];
 function onboardingActive() { return S && !(S.onb && S.onb.done) && !(arenaBest() > 15); }
 function claimOnb(id) {
