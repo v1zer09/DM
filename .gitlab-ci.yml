@@ -13,4 +13,4 @@ pages:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   environment:
     name: production
-    url: https://v1zer09.gitlab.io/dota2-master/
+    url: https://v1zer09.github.io/DM/
