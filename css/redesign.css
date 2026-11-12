@@ -181,8 +181,8 @@ table.board tr.me td { background: rgba(200,164,90,.15); box-shadow: inset 0 1px
 }
 
 /* ===== 2.13: мобильные устройства — без дёрганья страницы и под размер экрана ===== */
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; scrollbar-gutter: stable; overscroll-behavior-y: none; }
-body { overflow-x: hidden; overscroll-behavior-y: none; min-height: 100vh; min-height: 100dvh; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; overflow-y: auto; scrollbar-gutter: stable; overscroll-behavior-y: auto; }
+body { overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: auto; min-height: 100vh; min-height: 100dvh; }
 .wrap, .panel, .panel-b, .tab { min-width: 0; max-width: 100%; }
 img, canvas, video, svg { max-width: 100%; }
 .battle, .modal, .auth, .fs-ov, #maint { height: 100vh; height: 100dvh; }

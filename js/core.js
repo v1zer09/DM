@@ -819,6 +819,14 @@ function startGame() {
 // 2.4.6: вкладки не помещаются в окно — листаем колесом мыши (как в Dota), активную вкладку прокручиваем в зону видимости
 (function () {
   const nav = document.getElementById('nav'); if (!nav) return;
-  nav.addEventListener('wheel', e => { if (nav.scrollWidth <= nav.clientWidth) return; if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { nav.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+  nav.addEventListener('wheel', e => {
+    if (nav.scrollWidth <= nav.clientWidth) return;
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    const max = nav.scrollWidth - nav.clientWidth;
+    const next = Math.max(0, Math.min(max, nav.scrollLeft + e.deltaY));
+    if (next === nav.scrollLeft) return;
+    nav.scrollLeft = next;
+    e.preventDefault();
+  }, { passive: false });
   nav.addEventListener('click', e => { const b = e.target.closest('button'); if (b) try { b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch (x) { } });
 })();
